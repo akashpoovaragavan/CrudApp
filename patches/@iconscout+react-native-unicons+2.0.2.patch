@@ -1,0 +1,96 @@
+diff --git a/node_modules/@iconscout/react-native-unicons/android/build.gradle b/node_modules/@iconscout/react-native-unicons/android/build.gradle
+index 94e9880..4d31bae 100644
+--- a/node_modules/@iconscout/react-native-unicons/android/build.gradle
++++ b/node_modules/@iconscout/react-native-unicons/android/build.gradle
+@@ -1,5 +1,5 @@
+ buildscript {
+-    ext.safeExtGet = {prop, fallback ->
++    ext.safeExtGet = { prop, fallback ->
+         rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+     }
+     repositories {
+@@ -15,7 +15,7 @@ buildscript {
+ }
+ 
+ apply plugin: 'com.android.library'
+-apply plugin: 'maven'
++apply plugin: 'maven-publish'
+ 
+ // Matches values in recent template from React Native (0.59)
+ // https://github.com/facebook/react-native/blob/0.59-stable/template/android/build.gradle#L5-L9
+@@ -25,18 +25,18 @@ def DEFAULT_MIN_SDK_VERSION = 16
+ def DEFAULT_TARGET_SDK_VERSION = 28
+ 
+ android {
+-  compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
+-  buildToolsVersion safeExtGet('buildToolsVersion', DEFAULT_BUILD_TOOLS_VERSION)
+-
+-  defaultConfig {
+-    minSdkVersion safeExtGet('minSdkVersion', DEFAULT_MIN_SDK_VERSION)
+-    targetSdkVersion safeExtGet('targetSdkVersion', DEFAULT_TARGET_SDK_VERSION)
+-    versionCode 1
+-    versionName "1.0"
+-  }
+-  lintOptions {
+-    abortOnError false
+-  }
++    compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
++    buildToolsVersion safeExtGet('buildToolsVersion', DEFAULT_BUILD_TOOLS_VERSION)
++
++    defaultConfig {
++        minSdkVersion safeExtGet('minSdkVersion', DEFAULT_MIN_SDK_VERSION)
++        targetSdkVersion safeExtGet('targetSdkVersion', DEFAULT_TARGET_SDK_VERSION)
++        versionCode 1
++        versionName "1.0"
++    }
++    lintOptions {
++        abortOnError false
++    }
+ }
+ 
+ repositories {
+@@ -86,17 +86,17 @@ afterEvaluate { project ->
+     task androidJavadoc(type: Javadoc) {
+         source = android.sourceSets.main.java.srcDirs
+         classpath += files(android.bootClasspath)
+-        classpath += files(project.getConfigurations().getByName('compile').asList())
++        //classpath += files(project.getConfigurations().getByName('compile').asList())
+         include '**/*.java'
+     }
+ 
+     task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
+-        classifier = 'javadoc'
++        archiveClassifier = 'javadoc'
+         from androidJavadoc.destinationDir
+     }
+ 
+     task androidSourcesJar(type: Jar) {
+-        classifier = 'sources'
++        archiveClassifier = 'sources'
+         from android.sourceSets.main.java.srcDirs
+         include '**/*.java'
+     }
+@@ -108,18 +108,11 @@ afterEvaluate { project ->
+         }
+     }
+ 
+-    artifacts {
+-        archives androidSourcesJar
+-        archives androidJavadocJar
+-    }
+-
+-    task installArchives(type: Upload) {
+-        configuration = configurations.archives
+-        repositories.mavenDeployer {
+-            // Deploy to react-native-event-bridge/maven, ready to publish to npm
+-            repository url: "file://${projectDir}/../android/maven"
+-
+-            configureReactNativePom pom
++    publishing {
++        publications {
++            maven(MavenPublication) {
++                artifact androidSourcesJar
++            }
+         }
+     }
+ }
