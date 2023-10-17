@@ -4,7 +4,7 @@ import {crudApi} from '../api/url';
 import UserCard from '../components/userCard';
 import {useEffect, useState} from 'react';
 import makeGetRequest from '../utils/makeGetRequest';
-
+import {useSelector, useDispatch} from 'react-redux';
 const {
   View,
   Button,
@@ -18,22 +18,21 @@ const {
 } = require('react-native');
 import {CustomIcon} from '../components/customIcon';
 import Add from '@iconscout/react-native-unicons/icons/uil-plus';
+import {GET_USER_LIST} from '../redux/action';
 const UserListScreen = ({navigation}) => {
+  const dispatch = useDispatch();
   const [userData, setUserData] = useState([]);
-
+  //const {userDataG} = useSelector(state => state.userList);
   const getUser = useQuery('users', () => makeGetRequest(crudApi()), {
     onSuccess: res => {
+      dispatch({
+        type: GET_USER_LIST,
+        payload: res,
+      });
       setUserData(res);
     },
   });
-  const addUserMutation = useMutation(
-    data => makePostRequest(crudApi(), data),
-    {
-      onSuccess: res => {
-        console.log('CRUD-->', res);
-      },
-    },
-  );
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>

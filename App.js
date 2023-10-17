@@ -19,6 +19,8 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {QueryClient, QueryClientProvider, useMutation} from 'react-query';
 import UserListScreen from './src/screens/userListScreen';
 import ScreenNavigation from './src/navigation/screenNavigation';
+import {Provider} from 'react-redux';
+import {store} from './src/redux/store';
 
 const queryClient = new QueryClient();
 
@@ -31,15 +33,17 @@ const App = () => {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <SafeAreaView style={backgroundStyle}>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={backgroundStyle.backgroundColor}
-        />
-        <ScreenNavigation />
-      </SafeAreaView>
-    </QueryClientProvider>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <SafeAreaView style={backgroundStyle}>
+          <StatusBar
+            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+            backgroundColor={backgroundStyle.backgroundColor}
+          />
+          <ScreenNavigation />
+        </SafeAreaView>
+      </QueryClientProvider>
+    </Provider>
   );
 };
 
